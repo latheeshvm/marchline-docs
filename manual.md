@@ -175,6 +175,7 @@ off — because the main thread may only query the native world then):
 | Agent not moving | Its inspector during Play — the Explain panel shows state, goal, and (sync mode) what it's queued behind. `Planning` = order in flight; `Unreachable` = no route exists. |
 | Everything unreachable | NavWorld gizmo (select it): red cells are blocked. Wrong `obstacleMask`? Ground on an obstacle layer in 2D mode? |
 | Units ignore a new wall | Is the wall's collider on `obstacleMask`? Add `MarchlineObstacle` for instant pickup, or wait for the reconcile sweep. |
+| Agents stop arriving at a character (chase/follow AI) | The target probably has a collider (CharacterController counts!) on a layer inside `obstacleMask` — the scan marks its own cell as a wall. Put characters on a layer excluded from the mask (the console warns about this at agent registration). See the Chase Demo for the correct setup. |
 | "ABI … does not match" exception | The native plugin and C# scripts come from different package versions — reimport the package cleanly. |
 | Console warning about a contained panic | `MarchlineWorld.TakePanicFlag()` returned true: an internal error was contained. Please report it — it is a Marchline bug, never fatal to your game. |
 
