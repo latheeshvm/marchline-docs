@@ -83,6 +83,59 @@ panel shows its state, goal, and cost-to-go, and the flow-field overlay
 draws the route it believes in. If agents stand still, check
 `obstacleMask` first — it is that, ninety percent of the time.
 
+## Grid sizing and sectors
+
+Marchline's hierarchical pathfinder cuts the grid into **32x32-cell
+sectors**. Paths that start and end inside one sector are direct and
+optimal; paths crossing sector borders route through border portals and
+are bounded at 1.5x optimal — imperceptible on RTS-scale maps, but on a
+small action map a cross-sector route can visibly bow away from the
+straight line.
+
+The rule of thumb: **for action-scale maps, pick a `cellSize` that fits
+the playfield in one sector.** A 60x60-unit level at `cellSize 2` is a
+30x30 grid — single sector, every path direct. The NavWorld's scene
+gizmo draws sector boundaries in orange, and its inspector suggests the
+single-sector cell size when your map qualifies.
+
+Two consequences of changing `cellSize`: agent speeds are **cells per
+tick**, so halving the cell count means halving speed values to keep
+the same meters/second; and walls thinner than a cell still block the
+whole cell they touch.
+
+## Chasing targets near walls
+
+A chase target hugging a wall can put its center inside a blocked cell —
+and an order to a blocked cell honestly reports `Unreachable`. For chase
+AI, order with goal snapping instead:
+
+```csharp
+agent.MoveTo(player.position, snapToWalkable: true);
+```
+
+The goal lands on the nearest walkable cell (same physics predicate the
+scanner bakes with), so pursuers close to biting range instead of
+parking. `NavWorld.SnapToWalkable(worldPos)` exposes the snap directly.
+
+## Animating characters
+
+Marchline drives agent transforms; your Animator rides on top. The
+recipe that works (verified with Mixamo characters):
+
+- **In-place playback**: for clips that physically travel, bake root
+  rotation and Y into the pose but leave root XZ *unbaked*, and disable
+  `applyRootMotion` — the sim stays the only mover. (Baking XZ into the
+  pose makes the body glide off its transform and snap back per loop.)
+- **Smooth the model, not the sim**: simulation positions advance in
+  discrete ticks. Put the model on a child and glide it toward the root
+  each frame; measure animator Speed from the *smoothed* child so blend
+  trees don't shiver between gaits.
+- **Speed units**: `OverrideSpeed` is cells per tick. At 30 ticks/s and
+  `cellSize 1`, a 2.8 m/s walker is `0.095`; the RTS preset default
+  (0.35 = 10.5 m/s) reads as teleporting at character scale.
+- **Blend trees over state switches**: drive Idle-Walk-Run from measured
+  speed with thresholds at each clip's natural stride speed.
+
 ## Recipes
 
 ### RTS squads
