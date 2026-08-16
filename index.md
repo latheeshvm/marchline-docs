@@ -50,6 +50,9 @@ units, never wall-clock, so lockstep peers stay bit-identical.
 
 ## Documentation
 
+- [Quickstart & recipes](quickstart.md) — a player and two enemies in
+  five steps, then patterns for RTS squads, tower defense, hordes,
+  colony sims, stealth AI, multi-storey worlds, and lockstep
 - [Manual](manual.md) — setup, components, presets, groups & formations,
   dynamic worlds, debugging, performance guidance
 - [Migrating from Unity NavMesh](migration-from-navmesh.md)
