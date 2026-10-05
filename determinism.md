@@ -62,3 +62,15 @@ call is panic-contained (`ml_take_panic_flag`).
 - Building the grid from per-machine physics scans in lockstep mode
 - Mixing plugin/package versions across peers (the C# wrapper refuses to
   start on an ABI mismatch; native hosts should check `ml_abi_version`)
+
+
+## Engines and platforms
+
+The determinism boundary is the C ABI, and every adapter sits above it:
+Unity (C#), Godot (GDExtension), and engine-less/server (C or anything
+with a C FFI). The golden-hash matrix currently proves bit-identical
+simulation on linux-x64, windows-x64, macos-arm64, macos-x64, AND
+WebAssembly — so cross-engine lockstep (a Unity client against a Godot
+client, or either against a headless server, or a browser build against
+any of them) is the same guarantee as same-engine lockstep: identical
+command streams, identical worlds.

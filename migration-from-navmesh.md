@@ -21,9 +21,10 @@ var agent = GetComponent<Marchline.NavMeshAgentCompat>();
 agent.SetDestination(target);
 ```
 
-Supported: `destination`, `SetDestination`, `isStopped`, `pathPending`,
-`hasPath`, `remainingDistance` (straight-line approximation), `ResetPath`,
-`Warp`. Scene setup: delete your baked NavMesh and NavMeshAgent
+Supported: `destination`, `SetDestination`, `speed` (world units per
+second, as in NavMesh), `isStopped`, `pathPending`, `hasPath`,
+`remainingDistance` (straight-line approximation; for the walking distance
+use `MarchlineAgent.RemainingDistance()`), `ResetPath`, `Warp`. Scene setup: delete your baked NavMesh and NavMeshAgent
 components, add one `NavWorld` (it scans obstacles itself — no baking),
 and put `MarchlineAgent` + `NavMeshAgentCompat` on each unit.
 
@@ -43,6 +44,9 @@ hard collision radius derived from cell size).
 | `NavMesh.SamplePosition` | `NavWorld.WorldToCell` + your own walkability check via gizmo/`RefreshRegion` |
 | Agent avoidance quality slider | Built-in: separation + anticipatory steering + hard no-overlap constraint, always on |
 | `pathStatus` | `MarchlineAgent.State` (incl. an honest `Unreachable`) |
+| `NavMeshAgent.speed` | `MarchlineAgent.speed` (world units per second) |
+| `NavMeshAgent.isStopped`, `ResetPath` | `MarchlineAgent.Stop()` |
+| `NavMesh.CalculatePath`, `NavMeshPath.corners` | `NavWorld.TryFindPath(from, to, points, out length)` |
 
 What you gain: 10,000-agent scale, deterministic simulation (lockstep-
 capable), live world edits without re-baking, group arrival that doesn't
